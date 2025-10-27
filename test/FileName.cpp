@@ -1,135 +1,69 @@
 ﻿#include <iostream>
 #include <vector>
 #include <string>
-int main() {
-	int operation;
-	float Multiply(float massive[], int size);
-	float Add(float massive[], int size);
-	float Subtract(float massive[], int size);
-	float Divide(float massive[], int size);
-	char again;
-	std::string input;
-	do
-	{
-		std::cout << "choose operation: press 1 for multiplication; 2 for addition; 3 for subtraction; 4 for division\n  ";
-		std::cin >> operation;
-		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-		std::vector<float> massive;
-		switch (operation)
-		{
-		case 1:
-		{
-			std::cout << "Enter numbers to multiply:\n ";
-			while (true)
-			{
-				std::getline(std::cin, input);
-				if (input.empty()) break;
-				massive.push_back(std::stof(input));
-			} 
-			std::cout << "Result: " << Multiply(massive.data(), massive.size()) << std::endl;
-			massive.clear();
-			break;
+struct Token {
+	float value;
+	char op;
+	bool isNumber;
+};
+std::vector<Token> tokenize(const std::string& expr) {
+	std::vector<Token> tokens;
+	std::string num;
+	for (char c : expr) {
+		if (std::isdigit(c) || c == '.') {
+			num += c;
 		}
-		case 2:
-		{
-			std::cout << "Enter numbers to add:\n ";
-			while (true)
-			{
-				std::getline(std::cin, input);
-				if (input.empty()) break;
-				massive.push_back(std::stof(input));
-			} 
-			std::cout << "Result: " << Add(massive.data(), massive.size()) << std::endl;
-			massive.clear();
-			break;
+		else if (c == '+' || c == '-' || c == '*' || c == '/') {
+			if (!num.empty()) {
+				tokens.push_back({ std::stof(num), 0, true });
+				num.clear();
+			}
+			tokens.push_back({ 0, c, false });
 		}
-		case 3:
+	}
+	if (!num.empty()) tokens.push_back({ std::stof(num), 0, true });
+	return tokens;
+}
+float evaluate(const std::vector<Token>& tokens) {
+	std::vector<Token> temp = tokens;
+	float result = 0;
+	// Спочатку множення і ділення
+	for (int i = 0; i < temp.size(); i++) {
+		if (!temp[i].isNumber && (temp[i].op == '*' || temp[i].op == '/')) 
 		{
-			std::cout << "Enter numbers to subtract:\n ";
-			while (true)
-			{
-				std::getline(std::cin, input);
-				if (input.empty()) break;
-				massive.push_back(std::stof(input));
-			} 
-			std::cout << "Result: " << Subtract(massive.data(), massive.size()) << std::endl;
-			massive.clear();
-			break;
-		}
-		case 4:
-		{
-			std::cout << "Enter numbers to divide:\n ";
-			while (true)
-			{
-				std::getline(std::cin, input);
-				if (input.empty()) break;
-				massive.push_back(std::stof(input));
-			} 
-			std::cout << "Result: " << Divide(massive.data(), massive.size()) << std::endl;
-			massive.clear();
-			break;
-		}
+			float left = temp[i - 1].value;
+			float right = temp[i + 1].value;
+			float result = (temp[i].op == '*') ? (left * right) : (left / right);
 
+			// Замінюємо три токени на один результат
+			temp[i - 1].value = result;
+			temp.erase(temp.begin() + i, temp.begin() + i + 2);
+			i--;
 		}
-		std::cout << "Do you want to perform another operation? (y/n):\n ";
-		std::cin >> again;
-	} while (again == 'y' || again == 'Y');
+	}
+	if (temp.empty()) return 0;
+	result = temp[0].value;
+	for (int i = 1; i < temp.size(); i += 2) {
+		char op = temp[i].op;
+		float num = temp[i + 1].value;
+		if (op == '+') result += num;
+		if (op == '-') result -= num;
+	}
+    return result;
+}
+
+int main() {
+	while(true)
+	{
+		std::string expr;
+		std::cout << "Enter expression (e.g. 2+3*4-5/2): ";
+		std::getline(std::cin, expr);
+
+		auto tokens = tokenize(expr);
+		float result = evaluate(tokens);
+		std::cout << "Result: " << result << std::endl;
+		if (expr.empty()) break;
+	}
 	return 0;
-}
-float Multiply(float massive[], int size)
-{
-	float a = 0;
-	for (int i = 0; i < size; i++)
-	{
-		if (i == 0)
-		{
-			a += massive[i];
-		}
-		else
-		{
-			a *= massive[i];
-		}
-	}
-	return a;
-}
-float Add(float massive[], int size)
-{
-	float a = 0;
-	for (int i = 0; i < size; i++)
-	{
-		a += massive[i];
-	}
-	return a;
-}
-float Subtract(float massive[], int size)
-{
-	float a = 0;
-	for (int i = 0; i < size; i++)
-	{
-		if (i == 0)
-		{
-			a += massive[i];
-		}
-		else
-		{
-			a -= massive[i];
-		}
-	}
-	return a;
-}
-float Divide(float massive[], int size)
-{
-	float a = 0;
-	for (int i = 0; i < size; i++)
-	{
-		if (i == 0)
-		{
-			a += massive[i];
-		}
-		else
-		{
-			a /= massive[i];
-		}
-	}
-	return a;
+    
 }

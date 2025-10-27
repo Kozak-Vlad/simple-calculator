@@ -1,6 +1,2 @@
 ﻿  FileName.cpp
-C:\Users\Vlad\source\repos\test\test\FileName.cpp(29,68): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Vlad\source\repos\test\test\FileName.cpp(42,63): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Vlad\source\repos\test\test\FileName.cpp(55,68): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Vlad\source\repos\test\test\FileName.cpp(68,66): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
   test.vcxproj -> C:\Users\Vlad\source\repos\test\x64\Debug\test.exe
